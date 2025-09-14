@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "host": "[%key:common::config_flow::data::host%]",
+          "snmp_version": "SNMP Version"
+        }
+      },
+      "v2c": {
+        "data": {
+          "community_read": "Read Community",
+          "community_write": "Write Community (optional)"
+        }
+      },
+      "v3": {
+        "data": {
+          "username": "Username",
+          "auth_type": "Auth Type",
+          "auth_password": "Auth Password",
+          "priv_type": "Privacy Type",
+          "priv_password": "Privacy Password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "unknown": "[%key:common::config_flow::error::unknown%]"
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  }
+}

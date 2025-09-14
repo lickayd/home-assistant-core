@@ -1,0 +1,16 @@
+{
+  "domain": "hirschmann",
+  "name": "Hirschmann Network Switches",
+  "after_dependencies": ["snmp"],
+  "codeowners": ["@lickayd"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://www.home-assistant.io/integrations/network_switch",
+  "homekit": {},
+  "iot_class": "local_polling",
+  "loggers": ["pysnmp"],
+  "quality_scale": "bronze",
+  "requirements": ["pysnmp==7.1.21"],
+  "ssdp": [],
+  "zeroconf": []
+}

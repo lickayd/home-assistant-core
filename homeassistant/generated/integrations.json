@@ -2677,6 +2677,12 @@
         }
       }
     },
+    "hirschmann": {
+      "name": "Hirschmann Network Switches",
+      "integration_type": "hub",
+      "config_flow": true,
+      "iot_class": "local_polling"
+    },
     "hisense_aehw4a1": {
       "name": "Hisense AEH-W4A1",
       "integration_type": "hub",

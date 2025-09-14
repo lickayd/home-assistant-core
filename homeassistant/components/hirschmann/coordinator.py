@@ -186,8 +186,9 @@ class NetworkSwitchCoordinator(DataUpdateCoordinator[dict[int, dict[str, Any]]])
         super().__init__(
             hass,
             logger=logging.getLogger(__name__),
-            name="Network Switch",
+            name="Hirschmann",
             update_interval=DEFAULT_SCAN_INTERVAL,
+            config_entry=entry,
         )
         self.entry = entry
         self._host = entry.data["host"]

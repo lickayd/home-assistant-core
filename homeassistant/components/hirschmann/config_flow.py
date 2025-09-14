@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 from typing import Any, cast
 
 from pysnmp.error import PySnmpError
@@ -43,6 +44,9 @@ from .const import (
     SNMP_V3,
 )
 
+# Ensure submodules are imported so attributes exist at runtime
+importlib.import_module("homeassistant.components.snmp.const")
+importlib.import_module("homeassistant.components.snmp.util")
 # Resolve component submodules via attribute access to satisfy hassfest + mypy
 snmp_const = cast(Any, snmp).const
 snmp_util = cast(Any, snmp).util

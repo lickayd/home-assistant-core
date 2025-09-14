@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 import logging
 from typing import Any, cast
 
@@ -54,6 +55,8 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 # Resolve component submodules via attribute access to satisfy hassfest + mypy
+importlib.import_module("homeassistant.components.snmp.const")
+importlib.import_module("homeassistant.components.snmp.util")
 snmp_const = cast(Any, snmp).const
 snmp_util = cast(Any, snmp).util
 

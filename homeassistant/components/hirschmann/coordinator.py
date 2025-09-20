@@ -68,6 +68,14 @@ def _safe_str(value: Any) -> str:
         return repr(value)
 
 
+def normalize_port_name(name: str) -> str:
+    """Return a simplified port name without stack prefixes."""
+    parts = name.split("/")
+    if len(parts) > 2:
+        return "/".join(parts[1:])
+    return name
+
+
 class _V3ArchBackend:
     """Async pysnmp v3arch backend (v1/v2c/v3), aligned with snmp integration."""
 

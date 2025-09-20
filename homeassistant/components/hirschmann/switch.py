@@ -12,7 +12,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .coordinator import NetworkSwitchCoordinator
+from .coordinator import NetworkSwitchCoordinator, normalize_port_name
 
 
 async def async_setup_entry(
@@ -41,7 +41,7 @@ class NetworkPortSwitch(CoordinatorEntity[NetworkSwitchCoordinator], SwitchEntit
         super().__init__(coordinator)
         self._if_index = if_index
         host = coordinator.entry.data["host"]
-        name = coordinator.data[if_index]["name"]
+        name = normalize_port_name(coordinator.data[if_index]["name"])
         self._attr_name = f"Port {name}"
         self._attr_unique_id = f"{host}-port-admin-{if_index}"
 
@@ -96,7 +96,7 @@ class NetworkPortPoeSwitch(CoordinatorEntity[NetworkSwitchCoordinator], SwitchEn
         super().__init__(coordinator)
         self._if_index = if_index
         host = coordinator.entry.data["host"]
-        name = coordinator.data[if_index]["name"]
+        name = normalize_port_name(coordinator.data[if_index]["name"])
         self._attr_name = f"Port {name} PoE"
         self._attr_unique_id = f"{host}-port-poe-{if_index}"
 

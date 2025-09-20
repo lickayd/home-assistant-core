@@ -12,7 +12,7 @@ from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .coordinator import NetworkSwitchCoordinator
+from .coordinator import NetworkSwitchCoordinator, normalize_port_name
 
 
 async def async_setup_entry(
@@ -43,7 +43,7 @@ class NetworkPortSensor(CoordinatorEntity[NetworkSwitchCoordinator], SensorEntit
         super().__init__(coordinator)
         self._if_index = if_index
         host = coordinator.entry.data["host"]
-        port_name = coordinator.data[if_index]["name"]
+        port_name = normalize_port_name(coordinator.data[if_index]["name"])
         self._attr_name = f"Port {port_name}"
         self._attr_unique_id = f"{host}-port-{if_index}"
 
@@ -90,8 +90,8 @@ class NetworkPortPoeDetectionSensor(
         super().__init__(coordinator)
         self._if_index = if_index
         host = coordinator.entry.data["host"]
-        name = coordinator.data[if_index]["name"]
-        self._attr_name = f"Port {name} PoE Detection"
+        name = normalize_port_name(coordinator.data[if_index]["name"])
+        self._attr_name = f"Port {name} PoE Status"
         self._attr_unique_id = f"{host}-port-poe-detect-{if_index}"
 
     @property
@@ -143,7 +143,7 @@ class NetworkPortPoePowerSensor(
         super().__init__(coordinator)
         self._if_index = if_index
         host = coordinator.entry.data["host"]
-        name = coordinator.data[if_index]["name"]
+        name = normalize_port_name(coordinator.data[if_index]["name"])
         self._attr_name = f"Port {name} PoE Power"
         self._attr_unique_id = f"{host}-port-poe-power-{if_index}"
 

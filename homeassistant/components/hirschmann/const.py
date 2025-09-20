@@ -44,6 +44,10 @@ OID_BRIDGE_ADDR = "1.3.6.1.2.1.17.1.1.0"  # dot1dBaseBridgeAddress
 OID_HW_TYPE_BASE = "1.3.6.1.4.1.248.14.1.1.9.1.3.1"  # Append .0 if needed
 OID_FW_VER_BASE = "1.3.6.1.4.1.248.14.1.1.9.1.5.1"  # Append .0 if needed
 OID_POE_POWER_W = "1.3.6.1.2.1.105.1.3.1.1.2.1"  # Gauge32 Watts
+OID_DEVICE_TEMPERATURE = (
+    "1.3.6.1.4.1.248.14.2.5.1"  # hmTemperature, 32-bit integer Celsius
+)
+OID_SYSUPTIME = "1.3.6.1.2.1.1.3.0"  # TimeTicks since last reboot
 
 # PoE (IEEE 802.3af) PSE MIB (pethPsePortTable)
 OID_PETH_PORT_TABLE = "1.3.6.1.2.1.105.1.1.1"

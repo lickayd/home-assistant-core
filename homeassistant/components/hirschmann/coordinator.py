@@ -32,6 +32,7 @@ from .const import (
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVAL,
     OID_BRIDGE_ADDR,
+    OID_DEVICE_TEMPERATURE,
     OID_FW_VER_BASE,
     OID_HW_TYPE_BASE,
     OID_IFADMINSTATUS,
@@ -44,6 +45,7 @@ from .const import (
     OID_PETH_PORT_TABLE,
     OID_POE_POWER_W,
     OID_SYSNAME,
+    OID_SYSUPTIME,
     PETH_DETECT_STATUS_MAP,
     PRIV_AES,
     PRIV_DES,
@@ -332,6 +334,8 @@ class NetworkSwitchCoordinator(DataUpdateCoordinator[dict[int, dict[str, Any]]])
             # Ignore if not available
             pass
 
+        await self._async_update_device_metrics()
+
     async def _walk_simple(self, base_oid: str) -> list[tuple[Any, Any]]:
         vbs = await self._async_snmp_walk(base_oid)
         return [(vb[0], vb[1]) for vb in vbs]
@@ -347,6 +351,8 @@ class NetworkSwitchCoordinator(DataUpdateCoordinator[dict[int, dict[str, Any]]])
         if not self._ports:
             await self._discover_ports()
             await self._populate_device_meta()
+        else:
+            await self._async_update_device_metrics()
 
         # Read operational statuses
         statuses: dict[int, str] = {}
@@ -445,3 +451,62 @@ class NetworkSwitchCoordinator(DataUpdateCoordinator[dict[int, dict[str, Any]]])
         if not self._backend:
             raise UpdateFailed("SNMP backend not initialized")
         await self._backend.async_set_integer(oid, 1 if enable else 2)
+
+    @property
+    def device_meta(self) -> dict[str, Any]:
+        """Return a copy of the device metadata gathered via SNMP."""
+        return dict(self._device_meta)
+
+    async def _async_update_device_metrics(self) -> None:
+        """Refresh device-level metrics exposed as diagnostics sensors."""
+        await self._async_update_temperature()
+        await self._async_update_uptime()
+
+    async def _async_update_temperature(self) -> None:
+        """Fetch current device temperature if available."""
+        found_invalid = False
+        for candidate in (OID_DEVICE_TEMPERATURE, f"{OID_DEVICE_TEMPERATURE}.0"):
+            try:
+                err, status, _idx, var_binds = await self._async_snmp_get(candidate)
+            except UpdateFailed:
+                continue
+            if err or status or not var_binds:
+                continue
+            temperature: int | None
+            try:
+                temperature = int(var_binds[0][1])
+            except (TypeError, ValueError):
+                try:
+                    temperature = int(float(_safe_str(var_binds[0][1])))
+                except (ValueError, TypeError):
+                    temperature = None
+            if temperature is not None:
+                self._device_meta["temperature_c"] = temperature
+                return
+            found_invalid = True
+        if found_invalid:
+            self._device_meta.pop("temperature_c", None)
+
+    async def _async_update_uptime(self) -> None:
+        """Fetch current device uptime (seconds) if available."""
+        try:
+            err, status, _idx, var_binds = await self._async_snmp_get(OID_SYSUPTIME)
+        except UpdateFailed:
+            return
+        if err or status or not var_binds:
+            return
+        raw_value = var_binds[0][1]
+        uptime_seconds: float | None
+        try:
+            ticks = int(raw_value)
+            uptime_seconds = round(ticks / 100, 2)
+        except (TypeError, ValueError):
+            try:
+                ticks = int(float(_safe_str(raw_value)))
+                uptime_seconds = round(ticks / 100, 2)
+            except (ValueError, TypeError):
+                uptime_seconds = None
+        if uptime_seconds is not None:
+            self._device_meta["uptime_seconds"] = uptime_seconds
+        else:
+            self._device_meta.pop("uptime_seconds", None)
